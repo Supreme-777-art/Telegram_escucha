@@ -1,0 +1,15 @@
+{
+  "name": "telegram-bot",
+  "version": "1.0.0",
+  "description": "Bot de Telegram que reenvía mensajes automáticamente",
+  "main": "escucha_bot_telegram.js",
+  "scripts": {
+    "start": "node escucha_bot_telegram.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
