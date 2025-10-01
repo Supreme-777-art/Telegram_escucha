@@ -9,10 +9,10 @@ const botToken = process.env.BOT_TOKEN;
 const forwardChatId = process.env.FORWARD_CHAT_ID;
 const apiUrl = `https://api.telegram.org/bot${botToken}`;
 
-// Para requests HTTP
-const fetch = (...args) => import("node-fetch").then(({default: fetch}) => fetch(...args));
+// Import dinámico de fetch (para Node 18+)
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
-// Endpoint webhook
+// Ruta del webhook
 app.post(`/webhook/${botToken}`, async (req, res) => {
   const update = req.body;
 
@@ -23,28 +23,33 @@ app.post(`/webhook/${botToken}`, async (req, res) => {
 
     console.log(`✅ Nuevo mensaje de @${username}`);
 
-    // Reenviar mensaje
-    await fetch(`${apiUrl}/forwardMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: forwardChatId,
-        from_chat_id: chatId,
-        message_id: messageId,
-        disable_notification: true
-      })
-    });
+    try {
+      // Reenviar mensaje
+      await fetch(`${apiUrl}/forwardMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: forwardChatId,
+          from_chat_id: chatId,
+          message_id: messageId,
+          disable_notification: true
+        })
+      });
+      console.log("↳ Reenviado exitosamente ✅");
+    } catch (err) {
+      console.error("⚠️ Error al reenviar:", err.message);
+    }
   }
 
   res.sendStatus(200);
 });
 
-// Puerto dinámico (Render lo define)
+// Puerto dinámico de Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   console.log(`🚀 Bot escuchando en puerto ${PORT}`);
 
-  // Configurar webhook
+  // Configurar webhook en Telegram
   const webhookUrl = `${process.env.RENDER_EXTERNAL_URL}/webhook/${botToken}`;
   try {
     const res = await fetch(`${apiUrl}/setWebhook`, {
